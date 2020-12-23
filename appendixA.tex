@@ -1,0 +1,376 @@
+\chapter{Estrutura do Simulador}
+\label{apend:estr}
+
+Conforme descrito no Cap{\'\i}tulo~\ref{cap:impl}, foram utilizadas duas estruturas para este trabalho: um simulador constru{\'\i}do em linguagem C++, utilizando a biblioteca QtC++ para a interface gr{\'a}fica\footnote{Ver Figuras~\ref{fig:sim}, \ref{fig:sim_sub}, \ref{fig:sim_setpar}, \ref{fig:sim_setls}, \ref{fig:sim_pumps}, \ref{fig:sim_panels}, \ref{fig:sim_main}}; e um caderno de notas escrito na linguagem Python 3, atrav{\'e}s da estrutura de interface Jupyter-Notebook. A se{\c c}{\~a}o~\ref{sec:estsim} apresentar{\'a} a estrutura do simulador, enquanto a Se{\c c}{\~a}o~\ref{sec:estana} apresentar{\'a} a da an{\'a}lise.
+
+\section{Simulador} \label{sec:estsim}
+
+O software foi escrito com estrutura de programa{\c c}{\~a}o  orientada a objetos. Assim, al{\'e}m do programa principal (\textit{main}), diversas classes foram criadas para auxiliar a compila{\c c}{\~a}o, bem como a execu{\c c}{\~a}o. A \textbf{API} da biblioteca QtC++ utiliza, por padr{\~a}o, um arquivo com extens{\~a}o `\textit{.ui}', contendo o desenho da interface gr{\'a}fica, um arquivo com extens{\~a}o `\textit{.h}', de cabe{\c c}alho, com as declara{\c c}{\~o}es das classes e fun{\c c}{\~o}es, e um arquivo com extens{\~a}o `\textit{.cpp}', com o c{\'o}digo propriamente dito. A Tabela~\ref{tab:class} apresenta uma lista das classes criadas. Como n{\~a}o foi utilizado nenhum \textit{template} (classe gen{\'e}rica), todos os arquivos de cabe{\c c}alho necessariamente possuem um arquivo de c{\'o}digo associado.
+
+\begin{table}[!h]
+	\begin{center}
+		\caption{Lista de Classes do Simulador}
+		\label{tab:class}
+	    \vspace{5pt}
+		\begin{tabular}{c c c}
+			\hline
+			\textbf{Nome} & \textbf{Interface} & \textbf{Cabe{\c c}alho} \\
+			\hline\hline
+			MainWindow & \textit{mainwindow.ui} & \textit{mainwindow.h}\\
+			Clock & \--- & \textit{clock.h} \\
+			Panel & \textit{panel.ui} & \textit{panel.h} \\
+			Source & \textit{source.ui} & \textit{source.h} \\
+			Load & \textit{load.ui} & \textit{load.h} \\
+			Settings & \textit{settings.ui} & \textit{settings.h} \\
+			Operation & \--- & \textit{operation.h} \\
+			Parser & \--- & \textit{parser.h} \\
+			LoadShedding & \textit{loadshedding.ui} & \textit{loadshedding.h} \\
+			Search & \--- & \textit{search.h} \\
+			\hline
+		\end{tabular}
+	\end{center}
+\end{table}
+
+\subsection{Estrutura de Classes} \label{ssec:classes}
+
+A seguir, veremos uma breve descri{\c c}{\~a}o das classes contidas na Tabela~\ref{tab:class}, bem como seus respectivos m{\'e}todos associados.
+
+\subsubsection{MainWindow} \label{sssec:mainwindow}
+
+Aqui temos a janela principal que cont{\'e}m e gerencia todos os elementos do programa, os arquivos abertos, janela principal, elementos gr{\'a}ficos, simula{\c c}{\~a}o, etc. O programa principal (arquivo \textit{main.cpp}) cria uma inst{\^a}ncia desta classe para exibir a janela principal do programa.
+
+A \textbf{API} QtC++ utiliza, como extens{\~a}o da linguagem C++, o conceito de \textit{slots} e \textit{signals}, onde os \textit{slots} s{\~a}o m{\'e}todos ou fun{\c c}{\~o}es que podem ser ativadas quando um sinal conectado a eles {\'e} emitido. Por sua vez, os sinais s{\~a}o definidos e podem ser emitidos na ocorr{\^e}ncia de algum evento, como um clique de mouse ou a execu{\c c}{\~a}o de uma fun{\c c}{\~a}o. Esses conceitos e detalhes podem ser estudados na documenta{\c c}{\~a}o da \textbf{API}. A Tabela~\ref{tab:mainwindow} apresenta a lista de fun{\c c}{\~o}es, \textit{slots} e sinais da classe MainWindow. Esta mesma estrutura de apresenta{\c c}{\~a}o ser{\'a} utilizada nas demais classes. Como trata-se aqui de uma apresenta{\c c}{\~a}o resumida, n{\~a}o ser{\'a} transcrito o c{\'o}digo fonte nem inclu{\'\i}da a estrutura de vari{\'a}veis de cada m{\'e}todo, \textit{slot} ou sinal. O c{\'o}digo fonte original foi desenvolvido e armazenado na plataforma de versionamento de c{\'o}digo GitLab\footnote{\url{https://gitlab.com/noedelima/Power_Load_Shedding}}, atrav{\'e}s de conta privada.
+
+\begin{table}[!h]
+    \begin{center}
+	    \caption{Lista de M{\'e}todos e Sinais da Classe MainWindow}
+	    \label{tab:mainwindow}
+	    \vspace{5pt}
+		\begin{tabular}{c c c c c}
+			\hline
+			\textbf{M{\'e}todos} & \textbf{M{\'e}todos} & \textbf{Slots} & \textbf{Slots} & \textbf{Sinais} \\
+			\textbf{P{\'u}blicos} & \textbf{Privados} & \textbf{P{\'u}blicos} & \textbf{Privados} & \\
+			\hline\hline
+			&   & newMainPanel & newSystem & change \\
+			&   &   & closeSystem &     \\
+			&   &   & openSystem &     \\
+			&   &   & save &     \\
+			&   &   & saveAs &     \\
+			&   &   & setChange &     \\
+			&   &   & releaseRunButtons &     \\
+			&   &   & setLoadShedding &     \\
+			&   &   & setParameters &     \\
+			&   &   & setLoadShedFreq &     \\
+			&   &   & setLoadShedTime &     \\
+			&   &   & setLoadShedPercent &     \\
+			&   &   & setConstants &     \\
+			&   &   & setTimeScan &     \\
+			&   &   & parserBack &     \\
+			&   &   & setParser &     \\
+			&   &   & setUFLS &     \\
+			&   &   & unsetUFLS &     \\
+			&   &   & statusLSAct &     \\
+			&   &   & statusOverSpeed &     \\
+			&   &   & statusUnderSpeed &     \\
+			&   &   & checkExit &     \\
+			\hline
+		\end{tabular}
+	\end{center}
+\end{table}
+
+\subsubsection{Clock} \label{sssec:clock}
+
+Esta classe utiliza uma fun{\c c}{\~a}o interna para criar uma \textit{thread} a parte, onde esta {\'u}ltima emite pulsos (sinal \textit{scan}) com um intervalo de tempo definido nas configura{\c c}{\~o}es. Estes pulsos, por sua vez, s{\~a}o utilizados em diversas partes do programa para, por exemplo, efetuar uma atualiza{\c c}{\~a}o nos valores de carga e gera{\c c}{\~a}o, interromper uma busca para iniciar uma nova, etc.
+
+A estrutura de fun{\c c}{\~o}es desta classe esta apresentada na Tabela~\ref{tab:clock}.
+
+\begin{table}[!h]
+    \begin{center}
+	    \caption{Lista de M{\'e}todos e Sinais da Classe Clock}
+	    \label{tab:clock}
+	    \vspace{5pt}
+		\begin{tabular}{c c c c c}
+			\hline
+			\textbf{M{\'e}todos} & \textbf{M{\'e}todos} & \textbf{Slots} & \textbf{Slots} & \textbf{Sinais} \\
+			\textbf{P{\'u}blicos} & \textbf{Privados} & \textbf{P{\'u}blicos} & \textbf{Privados} & \\
+			\hline\hline
+			run & startWorkInAThread & setPlay &   & scan \\
+			&   & setPause &   & pause \\
+			&   & setStop &   & finish \\
+			&   & setTime &   & newTime \\
+			\hline
+		\end{tabular}
+	\end{center}
+\end{table}
+
+\subsubsection{Panel} \label{sssec:panel}
+
+Esta classe cont{\'e}m um arquivo de interface gr{\'a}fica com a representa{\c c}{\~a}o do painel em abas, fornecendo a contru{\c c}{\~a}o dos elementos como barramentos, disjuntores principais dependendo do tipo criado (de uma barra simples ou duas barras interligadas por um disjuntor central e alimenta{\c c}{\~o}es independentes) e {\'a}reas reservadas para inser{\c c}{\~a}o das cargas el{\'e}tricas e, no caso do painel principal, dos geradores.
+
+Os pain{\'e}is de duas barras contam ainda com um intertravamento que impossibilita que o disjuntor central de interliga{\c c}{\~a}o das barras seja ligado quando h{\'a} duas alimenta{\c c}{\~o}es independentes. Trata-se apenas de um intertravamento operacional usual, pois a manobra de alimenta{\c c}{\~a}o unilateral oferece restri{\c c}{\~a}o de carga e s{\'o} deve ser utilizada para manuten{\c c}{\~a}o de um dos disjuntores.
+
+Al{\'e}m dos elementos gr{\'a}ficos, esta classe conte{\'e}m todos os m{\'e}todos necess{\'a}rios associados, conforme listado na Tabela~\ref{tab:panel}.
+
+\begin{table}[!h]
+    \begin{center}
+	    \caption{Lista de M{\'e}todos e Sinais da Classe Panel}
+	    \label{tab:panel}
+	    \vspace{5pt}
+		\begin{tabular}{c c c c c}
+			\hline
+			\textbf{M{\'e}todos} & \textbf{M{\'e}todos} & \textbf{Slots} & \textbf{Slots} & \textbf{Sinais} \\
+			\textbf{P{\'u}blicos} & \textbf{Privados} & \textbf{P{\'u}blicos} & \textbf{Privados} & \\
+			\hline\hline
+			getTag &   & readyA & on\_tie\_clicked & busAonline \\
+			getBus &   & readyB & on\_feederA\_clicked & busBonline \\
+			getPowerA &   & refresh & on\_feederB\_clicked & changeTag \\
+			getPowerB &   & enableA & setDemandA & allowA \\
+			getNominal &   & enableB & setDemandB & allowB \\
+			getLoadsNested &   & addPanel & setTabTag & change \\
+			getLoadsA &   & newPanel &   & deleted \\
+			getLoadsB &   & addSource &   & newSetPowerA \\
+			getSourcesA &   & newSource &   & newSetPowerB \\
+			getSourcesB &   & addLoad &   & newPowerA \\
+			getPanels &   & newLoad &   & newPowerB \\
+			&   & setTag &   & play \\
+			&   & setBus &   & pause \\
+			&   & settings &   & stop \\
+			&   & setPower &   & frequency \\
+			&   & bridgePlay &   & trigger \\
+			&   & bridgeStop &   & underSpeed \\
+			&   & scan &   & overSpeed \\
+			&   & setDev &   &     \\
+			&   & setAlarm &   &     \\
+			&   & triggerLS &   &     \\
+			\hline
+		\end{tabular}
+	\end{center}
+\end{table}
+
+\subsubsection{Source} \label{sssec:source}
+
+Esta classe cont{\'e}m todos os elementos necess{\'a}rios para representar os geradores graficamente, efetuar opera{\c c}{\~o}es como ligar e desligar, alterar o nome atribu{\'\i}do a ele, etc.
+
+Para permitir uma melhor representa{\c c}{\~a}o de sistemas reais, os geradores t{\^e}m uma op{\c c}{\~a}o de opera{\c c}{\~a}o em modo manual, permitindo atribuir um valor de pot{\^e}ncia gerada fixo. Este modo permite influenciar manualmente a divis{\~a}o de carga entre os geradores em opera{\c c}{\~a}o, assumindo o controle autom{\'a}tico caso nenhum outro esteja operando deste modo.
+
+A Tabela~\ref{tab:source} apresenta a estrutura de m{\'e}todos desta classe.
+
+\begin{table}[!h]
+    \begin{center}
+	    \caption{Lista de M{\'e}todos e Sinais da Classe Source}
+	    \label{tab:source}
+	    \vspace{5pt}
+		\begin{tabular}{c c c c c}
+			\hline
+			\textbf{M{\'e}todos} & \textbf{M{\'e}todos} & \textbf{Slots} & \textbf{Slots} & \textbf{Sinais} \\
+			\textbf{P{\'u}blicos} & \textbf{Privados} & \textbf{P{\'u}blicos} & \textbf{Privados} & \\
+			\hline\hline
+			isOnline &   & ready & on\_onoff\_clicked & status \\
+			isAuto &   & play &   & deleted \\
+			getDemand &   & stop &   & change \\
+			getNominal &   & setOnOff &   &   \\
+			getInertia &   & setDemand &   &   \\
+			getPoint &   & setPoint &   &   \\
+			getTag &   & setTag &   &   \\
+			&   & setPower &   &   \\
+			&   & setInertia &   &   \\
+			&   & settings &   &   \\
+			\hline
+		\end{tabular}
+	\end{center}
+\end{table}
+
+\subsubsection{Load} \label{sssec:load}
+
+Esta classe cont{\'e}m todos os elementos necess{\'a}rios para representar graficamente uma carga, al{\'e}m de conter os dados, nomes, ajustes, valores, etc.
+
+A Tabela~\ref{tab:loads} apresenta a estrutura de m{\'e}todos desta classe.
+
+\begin{table}[!h]
+    \begin{center}
+	    \caption{Lista de M{\'e}todos e Sinais da Classe Loads}
+	    \label{tab:loads}
+	    \vspace{5pt}
+		\begin{tabular}{c c c c c}
+			\hline
+			\textbf{M{\'e}todos} & \textbf{M{\'e}todos} & \textbf{Slots} & \textbf{Slots} & \textbf{Sinais} \\
+			\textbf{P{\'u}blicos} & \textbf{Privados} & \textbf{P{\'u}blicos} & \textbf{Privados} & \\
+			\hline\hline
+			getTag &   & on\_onoff\_clicked &   & status \\
+			getPower &   & ready &   & changeTag \\
+			getNominal &   & setTag &   & deleted \\
+			getType &   & setSufix &   & change \\
+			getWeight &   & allow &   & power \\
+			running &   & turn &   &   \\
+			&   & settings &   &   \\
+			&   & setPower &   &   \\
+			&   & setType &   &   \\
+			&   & setDemand &   &   \\
+			&   & setWeight &   &   \\
+			&   & setTagBackground &   &   \\
+			\hline
+		\end{tabular}
+	\end{center}
+\end{table}
+
+\subsubsection{Settings} \label{sssec:settings}
+
+Esta classe apresenta uma interface unificada para tornar poss{\'\i}vel realizar todas as configura{\c c}{\~o}es necess{\'a}rias. Embora contenha em si todas as configura{\c c}{\~o}es globais, ela {\'e} acionada sob demanda, exibindo apenas os campos aplic{\'a}veis relativos {\`a} parte do programa que criou a inst{\^a}ncia.
+
+A Tabela~\ref{tab:settings} apresenta a estrutura de m{\'e}todos desta classe, que consiste, basicamente, em \textit{slots} para configurar os valores a serem exibidos (existentes), e sinais com os novos valores alterados ap{\'o}s confirma{\c c}{\~a}o.
+
+\begin{table}[!h]
+    \begin{center}
+	    \caption{Lista de M{\'e}todos e Sinais da Classe Settings}
+	    \label{tab:settings}
+	    \vspace{5pt}
+		\begin{tabular}{c c c c c}
+			\hline
+			\textbf{M{\'e}todos} & \textbf{M{\'e}todos} & \textbf{Slots} & \textbf{Slots} & \textbf{Sinais} \\
+			\textbf{P{\'u}blicos} & \textbf{Privados} & \textbf{P{\'u}blicos} & \textbf{Privados} & \\
+			\hline\hline
+			&   & setGlobal & on\_buttonBox\_accepted & power \\
+			&   & setLoadShedding & on\_buttonBox\_clicked & type \\
+			&   & setPanel &   & inertia \\
+			&   & setSource &   & timelap \\
+			&   & setLoad &   & LSsets \\
+			&   & setTitle &   & LSfreq \\
+			&   & setPower &   & LStime \\
+			&   & setType &   & weights \\
+			&   & setInertia &   &   \\
+			&   & setTimelap &   &   \\
+			&   & setLSsets &   &   \\
+			&   & setLSfreq &   &   \\
+			&   & setLStime &   &   \\
+			&   & setWeights &   &   \\
+			&   & resetValues &   &   \\
+			&   & applyValues &   &   \\
+			\hline
+		\end{tabular}
+	\end{center}
+\end{table}
+
+\subsubsection{Operation} \label{sssec:operation}
+
+Esta classe contem toda a simula{\c c}{\~a}o num{\'e}rica das cargas e dos geradores, efetuando tamb{\'e}m a atualiza{\c c}{\~a}o da frequ{\^e}ncia do sistema, al{\'e}m de disparar os sinais de alarme e atua{\c c}{\~a}o da rejei{\c c}{\~a}o de carga.
+
+A Tabela~\ref{tab:operation} apresenta a estrutura de m{\'e}todos desta classe que, podemos destacar, inclui muito mais sinais que m{\'e}todos, pois os resultados gerados mexem intrinsecamente em todo o restante do programa.
+
+\begin{table}[!h]
+    \begin{center}
+	    \caption{Lista de M{\'e}todos e Sinais da Classe Operation}
+	    \label{tab:operation}
+	    \vspace{5pt}
+		\begin{tabular}{c c c c c}
+			\hline
+			\textbf{M{\'e}todos} & \textbf{M{\'e}todos} & \textbf{Slots} & \textbf{Slots} & \textbf{Sinais} \\
+			\textbf{P{\'u}blicos} & \textbf{Privados} & \textbf{P{\'u}blicos} & \textbf{Privados} & \\
+			\hline\hline
+			updateLoads &   & update &   & load \\
+			loadSharing &   &   &   & generation \\
+			&   &   &   & maxgeneration \\
+			&   &   &   & overload \\
+			&   &   &   & frequency \\
+			&   &   &   & underSpeed \\
+			&   &   &   & overSpeed \\
+			\hline
+		\end{tabular}
+	\end{center}
+\end{table}
+
+\subsubsection{Parser} \label{sssec:parser}
+
+O objetivo desta classe {\'e} permitir o salvamento em disco da rede utilizada nas simula{\c c}{\~o}es. Assim, ao criar uma nova estrutura contendo dados de uma rede (real ou fict{\'\i}cia), pode-se salvar todos os dados, tanto dados el{\'e}tricos (topologia, valores nominais, tipos de carga, etc.) quanto as configura{\c c}{\~o}es (constantes de ajuste, pesos de import{\^a}ncia das cargas, ajustes de atua{\c c}{\~a}o do sistema de descarte de carga e tempo de atualiza{\c c}{\~a}o) podem ser salvas em um arquivo para posterior carregamento e utiliza{\c c}{\~a}o. Este arquivo utiliza uma exten{\c c}{\~a}o personalizada para ser associada ao programa (`\textit{arquivo.noah}') e, internamente, utiliza a estrutura \textbf{JSON} com escrita bin{\'a}ria. Esta estrutura permite a cria{\c c}{\~a}o de uma rede complexa ocupando pouco espa{\c c}o em disco.
+
+Esta classe tamb{\'e}m escreve um arquivo em disco no diret{\'o}rio onde est{\'a} salvo o arquivo com a rede utiliz{\'a}da contendo o hist{\'o}rico da simula{\c c}{\~a}o. Este arquivo est{\'a} estruturado no formato \textbf{JSON} textual, sendo de f{\'a}cil importa{\c c}{\~a}o em outras aplica{\c c}{\~o}es de an{\'a}lise, conforme Se{\c c}{\~a}o~\ref{sec:estana}. Este arquino de \textit{log} tem o mesmo nome do arquivo da rede, por{\'e}m, com a extens{\~a}o modificada (`\textit{arquivo.noah.dat}')
+
+A Tabela~\ref{tab:parser} apresenta a estrutura de m{\'e}todos desta classe.
+
+\begin{table}[!h]
+    \begin{center}
+	    \caption{Lista de M{\'e}todos e Sinais da Classe Parser}
+	    \label{tab:parser}
+	    \vspace{5pt}
+		\begin{tabular}{c c c c c}
+			\hline
+			\textbf{M{\'e}todos} & \textbf{M{\'e}todos} & \textbf{Slots} & \textbf{Slots} & \textbf{Sinais} \\
+			\textbf{P{\'u}blicos} & \textbf{Privados} & \textbf{P{\'u}blicos} & \textbf{Privados} & \\
+			\hline\hline
+			close & getDataFromFile & clearPath &   & change \\
+			open & setDataToFile & writeLog &   &   \\
+			saveAs & loadToJson &   &   &   \\
+			save & sourceToJson &   &   &   \\
+			getFilename & panelToJson &   &   &   \\
+			& jsonToLoad &   &   &   \\
+			& jsonToSource &   &   &   \\
+			& jsonToPanel &   &   &   \\
+			\hline
+		\end{tabular}
+	\end{center}
+\end{table}
+
+\subsubsection{LoadShedding} \label{sssec:loadshedding}
+
+Esta classe fornece uma apresenta{\c c}{\~a}o em lista na janela principal contendo a tabela de Rejei{\c c}{\~a}o de carga. Esta mostra n{\~a}o somente a ordem das cargas, como tamb{\'e}m destaca aquelas que devem ser de fato descartadas, agrupando e destacando em escala de cores por etapa, permitindo uma f{\'a}cil visualiza{\c c}{\~a}o da solu{\c c}{\~a}o encontrada em tempo real. {\'E} esta classe quem dispara o ciclo de buscas da classe Search, e, caso detecte algum desbalan{\c c}o de frequ{\^e}ncia, dispara o alarme e posterior desligamento. {\'E}, tamb{\'e}m, respons{\'a}vel por enviar os dados de \textit{log} para a classe Parser escrever no hist{\'o}rico.
+
+A Tabela~\ref{tab:loadshedding} apresenta a estrutura de m{\'e}todos desta classe.
+
+\begin{table}[!h]
+    \begin{center}
+	    \caption{Lista de M{\'e}todos e Sinais da Classe LoadShedding}
+	    \label{tab:loadshedding}
+	    \vspace{5pt}
+		\begin{tabular}{c c c c c}
+			\hline
+			\textbf{M{\'e}todos} & \textbf{M{\'e}todos} & \textbf{Slots} & \textbf{Slots} & \textbf{Sinais} \\
+			\textbf{P{\'u}blicos} & \textbf{Privados} & \textbf{P{\'u}blicos} & \textbf{Privados} & \\
+			\hline\hline
+			& updateTable & setLSFreq & setInitialSolution & alarm \\
+			&   & setLSTime & setCostInitial & trigger \\
+			&   & setLSPercent & setCostBest & update \\
+			&   & setLSWeights & debugLog & log \\
+			&   & setMainPanel &   &   \\
+			&   & updateMainPanel &   &   \\
+			&   & updateView &   &   \\
+			&   & updateList &   &   \\
+			&   & setAlarm &   &   \\
+			&   & actLS &   &   \\
+			&   & triggerSearch &   &   \\
+			\hline
+		\end{tabular}
+	\end{center}
+\end{table}
+
+\subsubsection{Search} \label{sssec:search}
+
+Esta fun{\c c}{\~a}o, que opera como uma classe virtual, {\'e} o n{\'u}cleo operacional deste trabalho, pois {\'e} quem realiza a metaheur{\'\i}stica de busca e retorna o resultado. Apesar de ser uma classe, configura apenas uma interface para receber do programa as informa{\c c}{\~o}es necess{\'a}rias para realizar a busca e retornar os resultados, sendo, na pr{\'a}tica, um m{\'o}dulo. Assim, o programa principal, \textit{mainwindow}, lan{\c c}a uma inst{\^a}ncia informando os dodos operacionais e configura{\c c}{\~o}es, em seguida aciona o m{\'e}todo de busca. A forma como esta classe foi elaborada solicita uma op{\c c}{\~a}o de busca na forma de {\'\i}ndice com par{\^a}metro impl{\'\i}cito. Assim, {\'e} poss{\'\i}vel implementar uma melhoria (\textit{update}) inserindo outros m{\'e}todos de busca al{\'e}m do \textbf{ILS}, permitindo uma compara{\c c}{\~a}o de desempenho.
+
+A Tabela~\ref{tab:search} apresenta a estrutura de m{\'e}todos desta classe.
+
+\begin{table}[!h]
+    \begin{center}
+	    \caption{Lista de M{\'e}todos e Sinais da Classe Search}
+	    \label{tab:search}
+	    \vspace{5pt}
+		\begin{tabular}{c c c c c}
+			\hline
+			\textbf{M{\'e}todos} & \textbf{M{\'e}todos} & \textbf{Slots} & \textbf{Slots} & \textbf{Sinais} \\
+			\textbf{P{\'u}blicos} & \textbf{Privados} & \textbf{P{\'u}blicos} & \textbf{Privados} & \\
+			\hline\hline
+			objective &   & play & startWorkInAThread & update \\
+			&   & setWeights & setStop & stop \\
+			&   & setSolution & searchILS & improve \\
+			&   & setPercent & swap & begin \\
+			&   & setLoads &   &   \\
+			\hline
+		\end{tabular}
+	\end{center}
+\end{table}
+
+\section{An{\'a}lises Estat{\'\i}sticas} \label{sec:estana}
+
+Ap{\'o}s as etapas de simula{\c c}{\~a}o da opera{\c c}{\~a}o em tempo real, os resultados escritos no hist{\'o}rico de opera{\c c}{\~a}o podem ser utilizados para verificar se o comportamento foi satisfat{\'o}rio. Para tanto, a plataforma de desenvolvimento Anaconda\footnote{\url{www.anaconda.com}} fornece um conjunto de ferramentas multiplataforma que utiliza como base a linguagem Python\footnote{\url{www.python.org}}, permitindo mesclar texto e c{\'o}digo, sendo, inclusive, {\'u}til para fins de apresenta{\c c}{\~a}o. Portanto, utilizando a ferramenta integrada Jupyter-Notebook\footnote{\url{www.jupyter.org}}, foi criado, na forma de bloco de notas, um texto base com a explica{\c c}{\~a}o deste trabalho, incluindo a rede de testes utilizada, e uma parte com c{\'o}digos para tratamento. Assim, um arquivo auxiliar, excrito em Python, cont{\'e}m uma classe contendo os m{\'e}todos para importa{\c c}{\~a}o e pr{\'e}-processamento do arquivo de hist{\'o}rico de opera{\c c}{\~a}o, fornecendo os dados obtidos na forma de dicion{\'a}ros e arranjos de sequ{\^e}ncias num{\'e}ricas. Este arquivo auxiliar {\'e} importado dentro do bloco de notas (apenas para ocultar esse volume de c{\'o}digo do arquivo de texto), trazendo os dados prontos para an{\'a}lise.
+
+O tratamento propriamente dito, foi realizado atrav{\'e}s da biblioteca Matplotlib\footnote{\url{www.matplotlib.org}}, que, a partir das sequ{\^e}ncias num{\'e}ricas, forneceu gr{\'a}ficos sequenciais e ordenados dos ganhos obtidos pelas buscas, bem como os valores estat{\'\i}sticos de m{\'e}dia ($\mu$) e desvio padr{\~a}o ($\sigma$). A visualiza{\c c}{\~a}o dos gr{\'a}ficos obtidos a partir dos ganhos ordenados de forma decrescente permitiu inferir, graficamente, que separar os valores acima e abaixo da m{\'e}dia traria uma aproxima{\c c}{\~a}o melhor dos ganhos obtidos a partir de uma solu{\c c}{\~a}o nova em rela{\c c}{\~a}o aos obtidos por simples ajuste de solu{\c c}{\~a}o anterior, aprimorando as solu{\c c}{\~o}es quantitativas e conclus{\c c}{\~o}es qualitativas ao utilizar as m{\'e}dias e desvios separados.
+
+%Como este c{\'o}digo n{\~a}o constitui propriamente um programa sen{\~a}o um m{\'e}todo, n{\~a}o cabe mais detalhes de implementa{\c c}{\~a}o al{\'e}m desta descri{\c c}{\~a}o das ferramentas utilizadas. % Retirado pra nao ficar uma pagina com uma linha solta ao final da dissertacao

@@ -1,0 +1,8 @@
+Notas de Revisão 
+
+    Revisão 0:
+        Revisão original, com a ideia original conforme implementada em Qt/C++, de acordo com as apresentações de proposta e documento enviado no pedido de prorrogação de prazo à coordenação do curso.
+        
+    Revisão 1:
+        Alteração na filosofia do trabalho. Em vez de gerar uma busca gerando uma tabela para cada gerador em operação, será gerada uma busca por blocos de carga para atender etapas de desligamento, conforme proposta original do UFLS, na referência "New et Al.".
+        A partir da proposta desta revisão, uma novo estratégia de busca e quantificação será necessária para definir uma tabela única com 3 a 5 blocos de desligamento, independente do evento que gere a onda de desligamentos, seja este a saída repentina de uma unidade geradora, uma sobrecarga momentânea ou a partida de um equipamento de grande porte.
