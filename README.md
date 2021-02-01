@@ -5,6 +5,8 @@ Documento distribuído e publicado em:
 
 http://dx.doi.org/10.22409/PGC.2019.m.10868036714
 
+http://www.ic.uff.br/PosGraduacao/frontend-tesesdissertacoes/download.php?id=952.pdf&tipo=trabalho
+
 Simulação anexa para obtemção dos dados do trabalho nos repositórios privados:
 
 https://gitlab.com/noedelima/Power_Load_Shedding
